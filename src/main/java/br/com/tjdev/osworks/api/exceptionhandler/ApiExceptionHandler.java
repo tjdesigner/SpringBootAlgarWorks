@@ -9,6 +9,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -56,7 +57,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 			var campos = new ArrayList<Problema.Campo>();
 			
 			for (ObjectError error : ex.getBindingResult().getAllErrors()) {
-				String nome = error.getObjectName();
+				String nome = ((FieldError) error).getField();
 				String mensagem = messageSource.getMessage(error, LocaleContextHolder.getLocale());
 				campos.add(new Problema.Campo(nome, mensagem));
 			}
