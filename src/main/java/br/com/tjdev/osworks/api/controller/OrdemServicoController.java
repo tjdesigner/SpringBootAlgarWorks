@@ -29,57 +29,55 @@ import br.com.tjdev.osworks.domain.service.GestaoOrdemServicoService;
 @RestController
 @RequestMapping("/ordens-servico")
 public class OrdemServicoController {
-	
+
 	@Autowired
 	private GestaoOrdemServicoService gestaoOrdemServico;
-	
+
 	@Autowired
 	private OrdemServicoRepository ordemServicoRepository;
-	
+
 	@Autowired
 	private ModelMapper modelMapper;
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public OrdemServicoModel criar(@Valid @RequestBody OrdemServicoInput ordemServicoInput) {
 		OrdemServico ordemServico = toEntity(ordemServicoInput);
-		
+
 		return toModel(gestaoOrdemServico.criar(ordemServico));
 	}
-	
+
 	@GetMapping
 	public List<OrdemServicoModel> Listar() {
 		return toCollectionModel(ordemServicoRepository.findAll());
 	}
-	
+
 	@GetMapping("/{ordemServicoId}")
-	public ResponseEntity<OrdemServicoModel> buscar(@PathVariable Long ordemServicoId){
+	public ResponseEntity<OrdemServicoModel> buscar(@PathVariable Long ordemServicoId) {
 		Optional<OrdemServico> ordemServico = ordemServicoRepository.findById(ordemServicoId);
-		
-		if(ordemServico.isPresent()) {
+
+		if (ordemServico.isPresent()) {
 			OrdemServicoModel ordemServicomodel = toModel(ordemServico.get());
 			return ResponseEntity.ok(ordemServicomodel);
 		}
-		
+
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PutMapping("/{ordemServicoId}/finalizacao")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void finalizar(@PathVariable Long ordemServicoId) {
 		gestaoOrdemServico.finalizar(ordemServicoId);
 	}
-	
+
 	private OrdemServicoModel toModel(OrdemServico ordemServico) {
 		return modelMapper.map(ordemServico, OrdemServicoModel.class);
 	}
-	
+
 	private List<OrdemServicoModel> toCollectionModel(List<OrdemServico> ordensServico) {
-		return ordensServico.stream()
-				.map(ordemServico -> toModel(ordemServico))
-				.collect(Collectors.toList());
+		return ordensServico.stream().map(ordemServico -> toModel(ordemServico)).collect(Collectors.toList());
 	}
-	
+
 	private OrdemServico toEntity(OrdemServicoInput ordemServicoInput) {
 		return modelMapper.map(ordemServicoInput, OrdemServico.class);
 	}
